@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table-container {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .premium-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .premium-table th {
+        background: var(--bg-secondary);
+        padding: 1.25rem 1.5rem;
+        text-align: left;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .premium-table td {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+        transition: var(--transition);
+    }
+
+    .premium-table tr:hover td {
+        background: var(--bg-secondary);
+    }
+
+    .job-info-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .job-title-link {
+        color: var(--text);
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.05rem;
+    }
+
+    .job-title-link:hover {
+        color: var(--primary);
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-PENDING { background: #fffbeb; color: #b45309; border: 1px solid #fef3c7; }
+    .status-SHORTLISTED { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; }
+    .status-REJECTED { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
+    .status-HIRED { background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; }
+
+    .action-link {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .action-link:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reveal">
+    <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">Applications History</h1>
+    <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 3rem;">Track and manage all your submitted proposals in one place.</p>
+</div>
+
+<div class="table-container reveal delay-1">
+    <table class="premium-table">
+        <thead>
+            <tr>
+                <th>Job & Company</th>
+                <th>Proposal Budget</th>
+                <th>Current Status</th>
+                <th>Date Applied</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+                <tr>
+                    <td>
+                        <div class="job-info-cell">
+                            <a href="{% url 'job_detail' app.job.pk %}" class="job-title-link">{{ app.job.title }}</a>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">{{ app.job.recruiter.recruiter_profile.company_name|default:"Independent Recruiter" }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <strong style="color: var(--text); font-size: 1.1rem;">${{ app.proposal_budget }}</strong>
+                    </td>
+                    <td>
+                        <span class="status-pill status-{{ app.status }}">
+                            <i class="fas {% if app.status == 'PENDING' %}fa-clock{% elif app.status == 'SHORTLISTED' %}fa-star{% elif app.status == 'HIRED' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+                            {{ app.get_status_display }}
+                        </span>
+                    </td>
+                    <td style="color: var(--text-muted); font-size: 0.95rem;">
+                        {{ app.created_at|date:"M d, Y" }}
+                    </td>
+                    <td>
+                        <a href="{% url 'job_detail' app.job.pk %}" class="action-link">
+                            View Details <i class="fas fa-chevron-right" style="font-size: 0.75rem;"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" style="padding: 6rem; text-align: center;">
+                        <div style="width: 80px; height: 80px; background: var(--bg-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem;">
+                            <i class="fas fa-inbox" style="font-size: 2rem; color: var(--text-muted);"></i>
+                        </div>
+                        <h3>No applications found</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem;">You haven't applied to any jobs yet. Start exploration!</p>
+                        <a href="{% url 'job_list' %}" class="btn btn-primary" style="padding: 1rem 2rem;">Discover Projects</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

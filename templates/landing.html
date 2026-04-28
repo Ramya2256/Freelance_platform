@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FreelanceHub - Connect with Top Talent{% endblock %}
+
+{% block body_class %}{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block header_branding %}
+<div style="flex: 1;">
+    <a href="/" class="logo">
+        <i class="fas fa-hubspot"></i> FreelanceHub
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        position: relative;
+        padding: 8rem 2rem;
+        text-align: center;
+        background: url('{% static "images/hero.png" %}') no-repeat center center;
+        background-size: cover;
+        margin: -2rem -2rem 4rem -2rem;
+        border-bottom: 1px solid var(--border);
+        color: white;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(135deg, rgba(29, 35, 51, 0.95) 0%, rgba(15, 23, 42, 0.8) 100%);
+        z-index: 1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .hero h1 {
+        font-size: 4rem;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+    }
+
+    .hero p {
+        font-size: 1.5rem;
+        opacity: 0.9;
+        margin-bottom: 3rem;
+        font-weight: 500;
+    }
+
+    .hero-btns {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+
+    .hero .btn {
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        border-radius: 3rem;
+    }
+
+    .hero .btn-white {
+        background: white;
+        color: var(--primary);
+    }
+
+    .hero .btn-outline-white {
+        background: transparent;
+        border: 2px solid white;
+        color: white;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-title h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2.5rem;
+        margin-bottom: 8rem;
+    }
+
+    .feature-card {
+        padding: 3rem 2rem;
+        border-radius: 1.5rem;
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .feature-card i {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 2rem;
+        background: var(--bg-secondary);
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 8rem;
+    }
+
+    .category-btn {
+        padding: 1.5rem;
+        border-radius: 1rem;
+        text-align: center;
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 700;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        border: 1px solid var(--border);
+    }
+
+    .category-btn:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        transform: scale(1.05);
+    }
+
+    .cta-section {
+        background: var(--primary);
+        color: white;
+        padding: 6rem 2rem;
+        border-radius: 2rem;
+        text-align: center;
+        margin-bottom: 8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content reveal">
+        <h1>Find Expert Freelancers for Your Next Big Project</h1>
+        <p>A premium ecosystem where elite talent meets visionary recruiters. Build, collaborate, and scale with ease.</p>
+        <div class="hero-btns reveal delay-1">
+            <a href="/accounts/signup/" class="btn btn-white">Get Started Now &rarr;</a>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <section class="features-section">
+        <div class="section-title reveal">
+            <h2>Everything You Need to Succeed</h2>
+            <p style="color: var(--text-muted); font-size: 1.2rem;">Our platform is packed with professional-grade tools.</p>
+        </div>
+        <div class="features">
+            <div class="feature-card glass reveal delay-1">
+                <i class="fas fa-bolt"></i>
+                <h3>Lightning Fast</h3>
+                <p>Hire the best talent in minutes with our advanced matching algorithms.</p>
+            </div>
+            <div class="feature-card glass reveal delay-2">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Secure Payments</h3>
+                <p>Safe and transparent contract management with escrow-like security.</p>
+            </div>
+            <div class="feature-card glass reveal delay-3">
+                <i class="fas fa-rocket"></i>
+                <h3>Scale Quickly</h3>
+                <p>Manage multiple projects and freelancers through one intuitive dashboard.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="categories-section reveal">
+        <div class="section-title">
+            <h2>Popular Categories</h2>
+            <p style="color: var(--text-muted);">Browse top-tier talent in any industry.</p>
+        </div>
+        <div class="categories">
+            <a href="/jobs/?category=WEB" class="category-btn glass"><i class="fas fa-code"></i> Web Dev</a>
+            <a href="/jobs/?category=MOBILE" class="category-btn glass"><i class="fas fa-mobile-alt"></i> Mobile Apps</a>
+            <a href="/jobs/?category=DESIGN" class="category-btn glass"><i class="fas fa-paint-brush"></i> Design</a>
+            <a href="/jobs/?category=WRITING" class="category-btn glass"><i class="fas fa-pen-nib"></i> Writing</a>
+            <a href="/jobs/?category=MARKETING" class="category-btn glass"><i class="fas fa-chart-line"></i> Marketing</a>
+            <a href="/jobs/?category=OTHER" class="category-btn glass"><i class="fas fa-ellipsis-h"></i> More</a>
+        </div>
+    </section>
+
+    <section class="cta-section reveal">
+        <h2 style="font-size: 3rem; margin-bottom: 1.5rem;">Ready to start your journey?</h2>
+        <p style="font-size: 1.3rem; margin-bottom: 3rem; opacity: 0.9;">Join thousands of professionals already thriving on FreelanceHub.</p>
+        <a href="/accounts/signup/" class="btn btn-white" style="border-radius: 3rem; padding: 1rem 3rem; font-weight: 800;">Get Started Now &rarr;</a>
+    </section>
+</div>
+{% endblock %}

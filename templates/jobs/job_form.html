@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block title %}Post a New Job | FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .job-post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .form-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 1.5rem;
+        padding: 3rem;
+        box-shadow: var(--shadow);
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+        color: var(--primary);
+    }
+
+    .section-header i {
+        font-size: 1.5rem;
+    }
+
+    .section-header h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group.full-width {
+        grid-column: span 2;
+    }
+
+    .toggle-group {
+        display: flex;
+        gap: 3rem;
+        background: var(--bg-secondary);
+        padding: 1.5rem;
+        border-radius: 1rem;
+    }
+
+    .toggle-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .btn-large {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        border-radius: 3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="job-post-container" style="max-width: 900px; margin: 0 auto;">
+    <div class="job-post-header reveal">
+        <div>
+            <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;">Post a New Job</h1>
+            <p style="color: var(--text-muted);">Reach the elite talent pool of FreelanceHub.</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <button type="button" onclick="document.getElementById('job-form').submit();" class="btn btn-primary btn-large">Post Job Now</button>
+            <button type="button" onclick="submitAsDraft();" class="btn" style="border: 2px solid var(--primary); color: var(--primary);">Save as Draft</button>
+        </div>
+    </div>
+
+    <form method="POST" id="job-form" class="reveal delay-1">
+        {% csrf_token %}
+        <input type="hidden" name="save_draft" id="save-draft-input" value="0">
+        
+        <div class="form-card">
+            <!-- Section 1: Job Information -->
+            <div class="section-header">
+                <i class="fas fa-info-circle"></i>
+                <h3>Section 1: Job Information</h3>
+            </div>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="{{ form.title.id_for_label }}">Job Title</label>
+                    {{ form.title }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.job_type.id_for_label }}">Job Type</label>
+                    {{ form.job_type }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">Category</label>
+                    {{ form.category }}
+                </div>
+                <div class="form-group full-width">
+                    <label for="{{ form.description.id_for_label }}">Job Description</label>
+                    {{ form.description }}
+                </div>
+            </div>
+
+            <!-- Section 2: Skills & Experience -->
+            <div class="section-header">
+                <i class="fas fa-tools"></i>
+                <h3>Section 2: Skills and Experience</h3>
+            </div>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="{{ form.required_skills.id_for_label }}">Required Skills</label>
+                    {{ form.required_skills }}
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Separate skills with commas (e.g. React, Node.js, Design)</p>
+                </div>
+                <div class="form-group full-width">
+                    <label for="{{ form.experience_level.id_for_label }}">Experience Level</label>
+                    {{ form.experience_level }}
+                </div>
+            </div>
+
+            <!-- Section 3: Budget & Deadline -->
+            <div class="section-header">
+                <i class="fas fa-hand-holding-usd"></i>
+                <h3>Section 3: Budget and Deadline</h3>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="{{ form.budget.id_for_label }}">Budget Amount ($)</label>
+                    {{ form.budget }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.deadline.id_for_label }}">Application Deadline</label>
+                    {{ form.deadline }}
+                </div>
+            </div>
+
+            <!-- Section 4: Hiring Preferences -->
+            <div class="section-header">
+                <i class="fas fa-user-check"></i>
+                <h3>Section 4: Hiring Preferences</h3>
+            </div>
+            <div class="toggle-group">
+                <div class="toggle-item">
+                    {{ form.interview_required }}
+                    <label for="{{ form.interview_required.id_for_label }}" style="margin-bottom:0; cursor:pointer;">Interview Required</label>
+                </div>
+                <div class="toggle-item">
+                    {{ form.assessment_required }}
+                    <label for="{{ form.assessment_required.id_for_label }}" style="margin-bottom:0; cursor:pointer;">Assessment Required</label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'dashboard' %}" class="btn" style="color: var(--text-muted);">Cancel</a>
+                <button type="submit" name="save_draft" class="btn" style="border: 2px solid var(--primary); color: var(--primary);">Save as Draft</button>
+                <button type="submit" class="btn btn-primary btn-large">Post Job</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function submitAsDraft() {
+        document.getElementById('save-draft-input').value = '1';
+        document.getElementById('job-form').submit();
+    }
+</script>
+{% endblock %}

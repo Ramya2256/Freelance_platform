@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Assessments - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .table-container {
+        background: var(--surface);
+        border-radius: 1rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        overflow: hidden;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 1.25rem 1.5rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+
+    th {
+        background: var(--bg);
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+    }
+
+    tbody tr:hover {
+        background: var(--bg);
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-ASSIGNED {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+
+    .status-SUBMITTED {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+
+    .status-REVIEWED {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .link-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .link-btn:hover {
+        text-decoration: underline;
+    }
+
+    .empty-state {
+        padding: 4rem 2rem;
+        text-align: center;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header reveal">
+    <div>
+        <h1>Assessments</h1>
+        <p style="color: var(--text-muted);">Track assigned tests and submissions.</p>
+    </div>
+</div>
+
+<div class="table-container reveal delay-1">
+    {% if assessments %}
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Job</th>
+                <th>{% if user.role == 'RECRUITER' %}Candidate{% else %}Recruiter{% endif %}</th>
+                <th>Deadline</th>
+                <th>Attachment</th>
+                <th>Status</th>
+                <th>Submission</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assessment in assessments %}
+            <tr>
+                <td><strong>{{ assessment.title }}</strong></td>
+                <td>{{ assessment.job.title }}</td>
+                <td>
+                    {% if user.role == 'RECRUITER' %}
+                    {{ assessment.freelancer.username }}
+                    {% else %}
+                    {{ assessment.recruiter.username }}
+                    {% endif %}
+                </td>
+                <td>{{ assessment.deadline|date:"M d, Y" }}</td>
+                <td>
+                    {% if assessment.attachment %}
+                    <a href="{{ assessment.attachment.url }}" target="_blank" class="link-btn"
+                        style="font-size: 0.9rem;" title="Download Attachment">
+                        <i class="fas fa-paperclip"></i> Download
+                    </a>
+                    {% else %}
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">None</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="status-badge status-{{ assessment.status }}">
+                        {{ assessment.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    {% if user.role == 'RECRUITER' %}
+                    {% if assessment.status == 'SUBMITTED' or assessment.status == 'REVIEWED' %}
+                    <a href="{{ assessment.submission_link|default:'#' }}" target="_blank" class="link-btn">
+                        <i class="fas fa-external-link-alt"></i> View Work
+                    </a>
+                    {% else %}
+                    <span style="color: var(--text-muted);">Waiting...</span>
+                    {% endif %}
+                    {% else %}
+                    {% if assessment.status == 'ASSIGNED' %}
+                    <a href="{% url 'submit_assessment' assessment.id %}" class="btn btn-outline"
+                        style="padding: 0.25rem 0.5rem; font-size: 0.85rem;">
+                        Submit Work
+                    </a>
+                    {% else %}
+                    <a href="{{ assessment.submission_link|default:'#' }}" target="_blank" class="link-btn">
+                        <i class="fas fa-check-circle"></i> View Submission
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-clipboard-list"></i>
+        <h3>No Assessments</h3>
+        <p>There are no assessments assigned or submitted yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

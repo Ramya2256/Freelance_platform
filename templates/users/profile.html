@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.username }}'s Profile - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header-wrap {
+        height: 240px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        border-radius: var(--radius);
+        margin-bottom: -100px;
+        position: relative;
+    }
+
+    .profile-card-grid {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 2rem;
+        position: relative;
+        z-index: 5;
+    }
+
+    .sidebar-inner {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2.5rem;
+        text-align: center;
+        box-shadow: var(--shadow);
+    }
+
+    .avatar-wrap {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: var(--bg-secondary);
+        border: 5px solid var(--card-bg);
+        margin: 0 auto 1.5rem;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: var(--text-muted);
+        overflow: hidden;
+    }
+
+    .profile-section {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--text);
+    }
+
+    .section-title i {
+        color: var(--primary);
+    }
+
+    .tag-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .skill-pill {
+        background: var(--bg-secondary);
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+    }
+
+    .stat-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .stat-row:last-child {
+        border-bottom: none;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .stat-value {
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    @media (max-width: 968px) {
+        .profile-card-grid {
+            grid-template-columns: 1fr;
+        }
+        .profile-header-wrap {
+            height: 180px;
+            margin-bottom: -80px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header-wrap reveal"></div>
+
+<div class="profile-card-grid reveal delay-1">
+    <aside class="sidebar-inner">
+        <div class="avatar-wrap">
+            {% if profile_user.profile_picture %}
+                <img src="{{ profile_user.profile_picture.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+                <i class="fas fa-user"></i>
+            {% endif %}
+        </div>
+        
+        <h2 style="margin-bottom: 0.25rem; font-weight: 800;">{{ profile_user.username }}</h2>
+        <div class="job-badge" style="background: var(--primary); color: white; margin-bottom: 2rem;">
+            {{ profile_user.get_role_display }}
+        </div>
+
+        <div style="text-align: left;">
+            <div class="stat-row">
+                <span class="stat-label">Member Since</span>
+                <span class="stat-value">{{ profile_user.date_joined|date:"M Y" }}</span>
+            </div>
+            {% if profile_user.role == 'FREELANCER' %}
+                <div class="stat-row">
+                    <span class="stat-label">Rating</span>
+                    <span class="stat-value">⭐ {{ profile_user.freelancer_profile.rating }}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Response Time</span>
+                    <span class="stat-value">&lt; 2 hours</span>
+                </div>
+            {% else %}
+                <div class="stat-row">
+                    <span class="stat-label">Company</span>
+                    <span class="stat-value">{{ profile_user.recruiter_profile.company_name|default:"Not Set" }}</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 2.5rem; display: grid; gap: 1rem;">
+            {% if user.is_authenticated and user != profile_user %}
+                <a href="{% url 'chat_detail' profile_user.username %}" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
+                    <i class="fas fa-envelope"></i> Send Message
+                </a>
+            {% elif user == profile_user %}
+                <a href="{% url 'profile_edit' %}" class="btn" style="width: 100%; justify-content: center; padding: 1rem; border: 1px solid var(--border);">
+                    <i class="fas fa-user-edit"></i> Edit Profile
+                </a>
+            {% endif %}
+            <button class="btn" style="width: 100%; justify-content: center; border: 1px solid var(--border); padding: 1rem;">
+                <i class="fas fa-share-alt"></i> Share Profile
+            </button>
+        </div>
+    </aside>
+
+    <main>
+        <div class="profile-section">
+            <h3 class="section-title"><i class="fas fa-id-card"></i> About Me</h3>
+            <p style="line-height: 1.8; color: var(--text); font-size: 1.05rem;">
+                {% if profile_user.role == 'FREELANCER' %}
+                    {{ profile_user.freelancer_profile.bio|default:"This freelancer hasn't written a bio yet." }}
+                {% else %}
+                    {{ profile_user.recruiter_profile.company_bio|default:"This recruiter hasn't written a company description yet." }}
+                {% endif %}
+            </p>
+        </div>
+
+        {% if profile_user.role == 'FREELANCER' %}
+        <div class="profile-section">
+            <h3 class="section-title"><i class="fas fa-tools"></i> Expert Skills</h3>
+            <div class="tag-container">
+                {% for skill in profile_user.freelancer_profile.skills.split %}
+                    <span class="skill-pill">{{ skill }}</span>
+                {% empty %}
+                    <p style="color: var(--text-muted); font-style: italic;">No skills listed.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h3 class="section-title"><i class="fas fa-history"></i> Work History</h3>
+            <div style="border-left: 2px solid var(--border); padding-left: 2rem; position: relative; margin-left: 0.5rem;">
+                <div style="position: absolute; left: -7px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--primary);"></div>
+                <h4 style="margin-bottom: 0.5rem;">Professional Experience</h4>
+                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7;">
+                    {{ profile_user.freelancer_profile.experience|default:"Detailed work history not available." }}
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

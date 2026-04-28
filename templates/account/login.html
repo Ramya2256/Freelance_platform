@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In - FreelanceHub{% endblock %}
+
+{% block body_class %}{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-wrapper {
+        display: flex;
+        min-height: 80vh;
+        align-items: center;
+        justify-content: center;
+        margin: -2rem;
+    }
+    .auth-card {
+        display: flex;
+        max-width: 900px;
+        width: 100%;
+        border-radius: 2rem;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+    .auth-side {
+        flex: 1;
+        background: url('{% static "images/auth_bg.png" %}') no-repeat center center;
+        background-size: cover;
+        position: relative;
+        padding: 3rem;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+    .auth-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to top, rgba(99, 102, 241, 0.8), transparent);
+    }
+    .auth-form-side {
+        flex: 1.2;
+        padding: 4rem 3rem;
+        background: var(--card-bg);
+    }
+    .auth-form-inner {
+        max-width: 340px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card glass reveal">
+        <div class="auth-side">
+            <div class="auth-overlay"></div>
+            <div style="position: relative; z-index: 2;">
+                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Welcome Back!</h2>
+                <p style="opacity: 0.9; font-size: 1.1rem;">Access your dashboard and continue your journey.</p>
+            </div>
+        </div>
+
+        <div class="auth-form-side">
+            <div class="auth-form-inner">
+                <div style="text-align: center; margin-bottom: 2.5rem;">
+                    <i class="fas fa-hubspot" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                    <h1 style="font-size: 1.75rem;">Sign In</h1>
+                </div>
+
+                <form method="POST" action="{% url 'account_login' %}">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 1.5rem;">
+                        {% for field in form %}
+                            <div style="margin-bottom: 1.25rem;">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="errorlist">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; border-radius: 2rem;">Sign In</button>
+                </form>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <p style="color: var(--text-muted);">
+                        New here? <a href="{% url 'account_signup' %}" style="color: var(--primary); font-weight: 700;">Create Account</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

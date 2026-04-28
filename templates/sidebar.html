@@ -1,0 +1,61 @@
+{% if user.role == 'RECRUITER' %}
+<!-- Recruiter Sidebar -->
+<a href="{% url 'dashboard' %}"
+    class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" title="Dashboard">
+    <i class="fas fa-th-large"></i> <span>Dashboard</span>
+</a>
+<a href="{% url 'job_create' %}"
+    class="nav-item {% if request.resolver_match.url_name == 'job_create' %}active{% endif %}" title="Post Job">
+    <i class="fas fa-plus-circle"></i> <span>Post Job</span>
+</a>
+<a href="{% url 'job_list' %}" class="nav-item {% if request.resolver_match.url_name == 'job_list' %}active{% endif %}"
+    title="Manage Jobs">
+    <i class="fas fa-briefcase"></i> <span>Manage Jobs</span>
+</a>
+<a href="/jobs/applicants/" class="nav-item" title="Applicants">
+    <i class="fas fa-users"></i> <span>Applicants</span>
+</a>
+<a href="/interviews/list/" class="nav-item" title="Interviews">
+    <i class="fas fa-calendar-alt"></i> <span>Interviews</span>
+</a>
+<a href="/assessments/list/" class="nav-item" title="Assessments">
+    <i class="fas fa-tasks"></i> <span>Assessments</span>
+</a>
+<a href="{% url 'chat_list' %}" class="nav-item" title="Messages">
+    <i class="fas fa-comments"></i> <span>Messages</span>
+</a>
+
+<a href="{% url 'profile' request.user.username %}"
+    class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" title="Profile Settings">
+    <i class="fas fa-user-circle"></i> <span>Profile</span>
+</a>
+
+{% else %}
+<!-- Freelancer Sidebar -->
+<a href="{% url 'dashboard' %}"
+    class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" title="My Dashboard">
+    <i class="fas fa-home"></i> <span>My Dashboard</span>
+</a>
+<a href="{% url 'job_list' %}" class="nav-item {% if request.resolver_match.url_name == 'job_list' %}active{% endif %}"
+    title="Browse Jobs">
+    <i class="fas fa-search"></i> <span>Browse Jobs</span>
+</a>
+<a href="/jobs/my-applications/" class="nav-item" title="My Applications">
+    <i class="fas fa-paper-plane"></i> <span>Applications</span>
+</a>
+<a href="/interviews/my-interviews/" class="nav-item" title="My Interviews">
+    <i class="fas fa-calendar-check"></i> <span>Interviews</span>
+</a>
+<a href="/assessments/my-tests/" class="nav-item" title="Assessments">
+    <i class="fas fa-laptop-code"></i> <span>Assessments</span>
+</a>
+<a href="{% url 'chat_list' %}" class="nav-item" title="Messages">
+    <i class="fas fa-envelope"></i> <span>Messages</span>
+</a>
+
+<a href="{% url 'profile_view' request.user.username %}"
+    class="nav-item {% if request.resolver_match.url_name == 'profile_view' %}active{% endif %}" title="My Profile">
+    <i class="fas fa-user-circle"></i> <span>My Profile</span>
+</a>
+
+{% endif %}

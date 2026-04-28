@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.first_name|default:profile_user.username }}'s Profile - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        max-width: 900px;
+        margin: 2rem auto;
+    }
+
+    .profile-header {
+        background: var(--surface);
+        border-radius: 1rem;
+        padding: 2.5rem;
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        font-weight: 600;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 4px solid var(--surface);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-info h1 {
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 2.25rem;
+    }
+
+    .profile-info .username {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .role-badge {
+        display: inline-block;
+        padding: 0.35rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .role-FREELANCER {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .role-RECRUITER {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary);
+    }
+
+    .edit-btn {
+        position: absolute;
+        top: 2rem;
+        right: 2.5rem;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .edit-btn {
+            position: relative;
+            top: 0;
+            right: 0;
+            margin-top: 1.5rem;
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .profile-card {
+        background: var(--surface);
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        margin-bottom: 2rem;
+    }
+
+    .profile-card h3 {
+        color: var(--text);
+        margin-bottom: 1.5rem;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .profile-card h3 i {
+        color: var(--primary);
+    }
+
+    .profile-card p {
+        color: var(--text-muted);
+        line-height: 1.7;
+    }
+
+    .detail-item {
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .detail-item i {
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-top: 0.2rem;
+        width: 24px;
+        text-align: center;
+    }
+
+    .detail-content h5 {
+        color: var(--text);
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .detail-content span {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .skills-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .skill-tag {
+        background: rgba(99, 102, 241, 0.05);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        color: var(--primary);
+        padding: 0.4rem 0.85rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container reveal">
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+        {% if profile_user.profile_picture %}
+        <img src="{{ profile_user.profile_picture.url }}" alt="Profile Avatar" class="profile-avatar">
+        {% else %}
+        <div class="profile-avatar">
+            {{ profile_user.first_name|default:profile_user.username|make_list|first|upper }}
+        </div>
+        {% endif %}
+
+        <div class="profile-info">
+            <h1>{{ profile_user.first_name }} {{ profile_user.last_name }}</h1>
+            <div class="username">
+                <i class="fas fa-at"></i> {{ profile_user.username }}
+            </div>
+            <span class="role-badge role-{{ profile_user.role }}">{{ profile_user.get_role_display }}</span>
+
+            {% if profile_user.role == 'RECRUITER' and profile.company_name %}
+            <div style="margin-top: 0.75rem; color: var(--text-muted);">
+                <i class="far fa-building"></i> {{ profile.company_name }}
+            </div>
+            {% endif %}
+        </div>
+
+        {% if request.user.id == profile_user.id %}
+        <a href="{% url 'profile_edit' %}" class="btn btn-outline edit-btn">
+            <i class="fas fa-edit"></i> Edit Profile
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Profile Details Grid -->
+    <div class="profile-grid">
+        <!-- Main Content -->
+        <div>
+            <div class="profile-card">
+                <h3><i class="fas fa-user"></i> About</h3>
+                {% if profile_user.role == 'RECRUITER' %}
+                {% if profile.company_bio %}
+                <p>{{ profile.company_bio|linebreaks }}</p>
+                {% else %}
+                <p><em>No company bio provided yet.</em></p>
+                {% endif %}
+                {% else %}
+                {% if profile.bio %}
+                <p>{{ profile.bio|linebreaks }}</p>
+                {% else %}
+                <p><em>No bio provided yet.</em></p>
+                {% endif %}
+                {% endif %}
+            </div>
+
+            {% if profile_user.role == 'FREELANCER' %}
+            <div class="profile-card">
+                <h3><i class="fas fa-tools"></i> Skills</h3>
+                <div class="skills-list">
+                    {% if profile.skills %}
+                    <p class="skill-tag" style="background:none; border:none; color:var(--text); padding:0;">
+                        {{ profile.skills }}
+                    </p>
+                    {% else %}
+                    <p><em>No skills added.</em></p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar Info -->
+        <div>
+            <div class="profile-card">
+                <h3><i class="far fa-address-card"></i> Contact Details</h3>
+
+                <div class="detail-item">
+                    <i class="far fa-envelope"></i>
+                    <div class="detail-content">
+                        <h5>Email</h5>
+                        <span>{{ profile_user.email|default:"Not provided" }}</span>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <div class="detail-content">
+                        <h5>Phone</h5>
+                        <span>{{ profile_user.phone_number|default:"Not provided" }}</span>
+                    </div>
+                </div>
+
+                {% if profile_user.role == 'RECRUITER' and profile.website %}
+                <div class="detail-item">
+                    <i class="fas fa-link"></i>
+                    <div class="detail-content">
+                        <h5>Website</h5>
+                        <a href="{{ profile.website }}" target="_blank" style="color: var(--primary);">View Site</a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="detail-item"
+                    style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                    <i class="far fa-calendar-alt"></i>
+                    <div class="detail-content">
+                        <h5>Joined</h5>
+                        <span>{{ profile_user.date_joined|date:"F Y" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if request.user != profile_user %}
+            <a href="{% url 'chat_list' %}" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                <i class="far fa-envelope"></i> Message {{ profile_user.first_name|default:profile_user.username }}
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

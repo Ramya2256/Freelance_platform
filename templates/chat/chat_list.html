@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+<div class="chat-container" style="max-width: 800px; margin: 0 auto; display: flex; height: 70vh; background: var(--card-bg); border-radius: 1rem; border: 1px solid var(--border); overflow: hidden;">
+    <!-- User List -->
+    <div class="chat-sidebar" style="flex: 1; border-right: 1px solid var(--border); overflow-y: auto;">
+        <div style="padding: 1.5rem; border-bottom: 1px solid var(--border);">
+            <h2 style="font-size: 1.2rem;">Messages</h2>
+        </div>
+        {% for user in chat_users %}
+        <a href="{% url 'chat_detail' user.username %}" style="display: block; padding: 1.25rem; text-decoration: none; color: var(--text); border-bottom: 1px solid var(--border); transition: var(--transition);">
+            <strong>{{ user.username }}</strong>
+            <small style="display: block; color: var(--text-muted);">{{ user.get_role_display }}</small>
+        </a>
+        {% empty %}
+        <div style="padding: 2rem; text-align: center; color: var(--text-muted);">No active chats.</div>
+        {% endfor %}
+    </div>
+
+    <!-- Chat Area Placeholder -->
+    <div class="chat-area" style="flex: 2; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary);">
+        <p style="color: var(--text-muted);">Select a conversation to start chatting.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Account - FreelanceHub{% endblock %}
+
+{% block body_class %}{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-wrapper {
+        display: flex;
+        min-height: 85vh;
+        align-items: center;
+        justify-content: center;
+        margin: -2rem;
+    }
+    .auth-card {
+        display: flex;
+        max-width: 1000px;
+        width: 100%;
+        border-radius: 2rem;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+    .auth-side {
+        flex: 1;
+        background: url('{% static "images/hero.png" %}') no-repeat center center;
+        background-size: cover;
+        position: relative;
+        padding: 3rem;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+    .auth-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to top, rgba(99, 102, 241, 0.8), transparent);
+    }
+    .auth-form-side {
+        flex: 1.5;
+        padding: 4rem 3rem;
+        background: var(--card-bg);
+        overflow-y: auto;
+        max-height: 85vh;
+    }
+    .auth-form-inner {
+        max-width: 450px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card glass reveal">
+        <div class="auth-side">
+            <div class="auth-overlay"></div>
+            <div style="position: relative; z-index: 2;">
+                <h2 style="font-size: 2.25rem; margin-bottom: 1rem;">Join the Community</h2>
+                <p style="opacity: 0.9; font-size: 1.1rem;">Select your role and get started.</p>
+            </div>
+        </div>
+
+        <div class="auth-form-side">
+            <div class="auth-form-inner">
+                <div style="text-align: center; margin-bottom: 2.5rem;">
+                    <i class="fas fa-hubspot" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                    <h1 style="font-size: 1.75rem;">Create Account</h1>
+                </div>
+
+                <form method="POST" action="{% url 'account_signup' %}">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        {% for field in form %}
+                            <div style="margin-bottom: 1rem; {% if field.name == 'role' or field.name == 'bio' or field.name == 'skills' %} grid-column: 1 / -1; {% endif %}">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="errorlist">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; border-radius: 2rem; font-weight: 700;">Create Account</button>
+                </form>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <p style="color: var(--text-muted);">
+                        Already have an account? <a href="{% url 'account_login' %}" style="color: var(--primary); font-weight: 700;">Sign In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

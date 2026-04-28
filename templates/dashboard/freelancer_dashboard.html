@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Freelancer Dashboard - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        padding: 1.5rem;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: var(--transition);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow);
+    }
+
+    .stat-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: var(--primary);
+        color: white;
+    }
+
+    .stat-info h3 {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-info .value {
+        font-size: 1.75rem;
+        font-weight: 800;
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 2rem;
+    }
+
+    .chart-container {
+        padding: 1.5rem;
+        border-radius: 1rem;
+        min-height: 350px;
+    }
+
+    .chart-container h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header reveal">
+    <div>
+        <h1>Freelancer Dashboard</h1>
+        <p style="color: var(--text-muted);">Welcome back, {{ user.username }}!</p>
+    </div>
+    <a href="{% url 'job_list' %}" class="btn btn-primary">
+        <i class="fas fa-search"></i> Browse Jobs
+    </a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card glass reveal delay-1">
+        <div class="stat-icon" style="background: #6366f1;"><i class="fas fa-paper-plane"></i></div>
+        <div class="stat-info">
+            <h3>Jobs Applied</h3>
+            <div class="value">{{ applied_jobs_count }}</div>
+        </div>
+    </div>
+    <div class="stat-card glass reveal delay-2">
+        <div class="stat-icon" style="background: #10b981;"><i class="fas fa-calendar-alt"></i></div>
+        <div class="stat-info">
+            <h3>Invitations</h3>
+            <div class="value">{{ interview_invites }}</div>
+        </div>
+    </div>
+    <div class="stat-card glass reveal delay-3">
+        <div class="stat-icon" style="background: #f59e0b;"><i class="fas fa-tasks"></i></div>
+        <div class="stat-info">
+            <h3>Active Projects</h3>
+            <div class="value">{{ active_projects }}</div>
+        </div>
+    </div>
+    <div class="stat-card glass reveal delay-3">
+        <div class="stat-icon" style="background: #ec4899;"><i class="fas fa-wallet"></i></div>
+        <div class="stat-info">
+            <h3>Total Earnings</h3>
+            <div class="value">${{ total_earnings }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="charts-grid">
+    <div class="chart-container glass reveal delay-1">
+        <h3>Applications per Month</h3>
+        <div style="position: relative; height: 300px; width: 100%;">
+            <canvas id="appsMonthChart"></canvas>
+        </div>
+    </div>
+    <div class="chart-container glass reveal delay-2">
+        <h3>Earnings Growth</h3>
+        <div style="position: relative; height: 300px; width: 100%;">
+            <canvas id="earningsGrowthChart"></canvas>
+        </div>
+    </div>
+    <div class="chart-container glass reveal delay-3">
+        <h3>Project Status</h3>
+        <div style="position: relative; height: 300px; width: 100%;">
+            <canvas id="projectStatusChart"></canvas>
+        </div>
+    </div>
+    <div class="chart-container glass reveal delay-3">
+        <h3>Work Activity Trend</h3>
+        <div style="position: relative; height: 300px; width: 100%;">
+            <canvas id="activityTrendChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: { color: getComputedStyle(document.body).getPropertyValue('--text') }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                ticks: { color: '#94a3b8' }
+            },
+            x: {
+                grid: { display: false },
+                ticks: { color: '#94a3b8' }
+            }
+        }
+    };
+
+    // Data from Django
+    const appsMonthData = JSON.parse('{{ chart_apps_month|safe }}');
+    const earningsGrowthData = JSON.parse('{{ chart_earnings_growth|safe }}');
+    const projectStatusData = JSON.parse('{{ chart_project_status|safe }}');
+    const activityTrendData = JSON.parse('{{ chart_activity_trend|safe }}');
+
+    // Chart 1: Bar Chart
+    new Chart(document.getElementById('appsMonthChart'), {
+        type: 'bar',
+        data: {
+            labels: appsMonthData.labels,
+            datasets: [{
+                label: 'Applications',
+                data: appsMonthData.data,
+                backgroundColor: '#6366f1',
+                borderRadius: 8
+            }]
+        },
+        options: chartDefaults
+    });
+
+    // Chart 2: Line Chart
+    new Chart(document.getElementById('earningsGrowthChart'), {
+        type: 'line',
+        data: {
+            labels: earningsGrowthData.labels,
+            datasets: [{
+                label: 'Earnings ($)',
+                data: earningsGrowthData.data,
+                borderColor: '#10b981',
+                tension: 0.4,
+                fill: false
+            }]
+        },
+        options: chartDefaults
+    });
+
+    // Chart 3: Pie Chart
+    new Chart(document.getElementById('projectStatusChart'), {
+        type: 'pie',
+        data: {
+            labels: projectStatusData.labels,
+            datasets: [{
+                data: projectStatusData.data,
+                backgroundColor: ['#6366f1', '#10b981', '#ef4444']
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            scales: {}
+        }
+    });
+
+    // Chart 4: Area Chart
+    new Chart(document.getElementById('activityTrendChart'), {
+        type: 'line',
+        data: {
+            labels: activityTrendData.labels,
+            datasets: [{
+                label: 'Activity',
+                data: activityTrendData.data,
+                borderColor: '#ec4899',
+                backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: chartDefaults
+    });
+</script>
+{% endblock %}

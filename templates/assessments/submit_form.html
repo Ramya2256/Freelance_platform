@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Assessment - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+    }
+
+    .form-section {
+        background: var(--surface);
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        margin-bottom: 2rem;
+    }
+
+    .form-section h3 {
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--text);
+        font-size: 1.25rem;
+    }
+
+    .form-section h3 i {
+        color: var(--primary);
+    }
+
+    .info-card {
+        background: var(--bg);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+    }
+
+    .info-card h4 {
+        margin-bottom: 0.5rem;
+    }
+
+    .info-card p {
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        background: var(--bg);
+        color: var(--text);
+        transition: var(--transition);
+        font-family: inherit;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container reveal">
+    <div class="form-header">
+        <h1>Submit Assessment</h1>
+        <p style="color: var(--text-muted);">Provide the link to your completed test or task.</p>
+    </div>
+
+    <div class="info-card">
+        <h4>{{ assessment.title }}</h4>
+        <div style="font-size: 0.85rem; color: var(--primary); margin-bottom: 1rem;">
+            <strong>Job:</strong> {{ assessment.job.title }}
+            &nbsp;|&nbsp;
+            <strong>Deadline:</strong> {{ assessment.deadline|date:"M d, Y - h:i A" }}
+        </div>
+        <p>{{ assessment.description|linebreaks }}</p>
+
+        {% if assessment.attachment %}
+        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+            <h5 style="margin-bottom: 0.75rem; color: var(--text);">Attached Resources:</h5>
+            <a href="{{ assessment.attachment.url }}" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                <i class="fas fa-file-download"></i> Download Attachment
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <form method="POST" class="form-section">
+        {% csrf_token %}
+        <h3><i class="fas fa-link"></i> Submission Details</h3>
+
+        <div class="form-group">
+            <label for="submission_link">Work Link (GitHub, Google Drive, Portfolio, etc.) *</label>
+            <input type="url" id="submission_link" name="submission_link" required
+                placeholder="https://github.com/yourusername/repo">
+        </div>
+
+        <div class="form-actions">
+            <a href="javascript:history.back()" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> Submit Work
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

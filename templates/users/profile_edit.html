@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="profile-edit-container" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); padding: 2rem; border-radius: 1rem; border: 1px solid var(--border);">
+    <h2 style="margin-bottom: 2rem;">Edit Your Profile</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- Simple form fields for prototype -->
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Bio</label>
+            <textarea name="bio" style="width: 100%; min-height: 150px; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--bg); color: var(--text);">{{ profile.bio }}{{ profile.company_bio }}</textarea>
+        </div>
+
+        {% if user.role == 'FREELANCER' %}
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Skills (Comma separated)</label>
+            <input type="text" name="skills" value="{{ profile.skills }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--bg); color: var(--text);">
+        </div>
+        {% else %}
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Company Name</label>
+            <input type="text" name="company_name" value="{{ profile.company_name }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--bg); color: var(--text);">
+        </div>
+        {% endif %}
+
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Save Changes</button>
+            <a href="{% url 'profile' user.username %}" class="btn" style="flex: 1; text-align: center; border: 1px solid var(--border);">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

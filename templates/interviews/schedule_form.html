@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Schedule Interview - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+    }
+
+    .form-section {
+        background: var(--surface);
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        margin-bottom: 2rem;
+    }
+
+    .form-section h3 {
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--text);
+        font-size: 1.25rem;
+    }
+
+    .form-section h3 i {
+        color: var(--primary);
+    }
+
+    .info-card {
+        background: var(--bg);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+        display: flex;
+        gap: 2rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .info-item span {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .info-item strong {
+        color: var(--text);
+        font-size: 1.1rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        background: var(--bg);
+        color: var(--text);
+        transition: var(--transition);
+        font-family: inherit;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container reveal">
+    <div class="form-header">
+        <h1>Schedule Interview</h1>
+        <p style="color: var(--text-muted);">Set up an interview with the candidate for your job posting.</p>
+    </div>
+
+    <div class="info-card">
+        <div class="info-item">
+            <span>Candidate</span>
+            <strong>{{ freelancer.username }}</strong>
+        </div>
+        <div class="info-item">
+            <span>Job Role</span>
+            <strong>{{ job.title }}</strong>
+        </div>
+    </div>
+
+    <form method="POST" class="form-section">
+        {% csrf_token %}
+        <h3><i class="fas fa-calendar-alt"></i> Interview Details</h3>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="date_time">Date and Time *</label>
+                <input type="datetime-local" id="date_time" name="date_time" required>
+            </div>
+
+            <div class="form-group">
+                <label for="meeting_link">Meeting Link (Zoom, Meet, etc.)</label>
+                <input type="url" id="meeting_link" name="meeting_link" placeholder="https://zoom.us/j/123456789">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Additional Notes for Candidate</label>
+                <input type="text" id="notes" name="notes"
+                    placeholder="e.g., Please install XYZ software before the call">
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="javascript:history.back()" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> Schedule
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

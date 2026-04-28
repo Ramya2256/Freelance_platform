@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore Opportunities - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .jobs-page-header {
+        padding: 4rem 0 3rem;
+        background: linear-gradient(to bottom, var(--bg-secondary), var(--bg));
+        text-align: center;
+        margin-top: -2rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .jobs-page-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.02em;
+    }
+
+    .search-filter-bar {
+        background: var(--card-bg);
+        padding: 1rem;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 3rem;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        z-index: 10;
+        margin-top: -2.5rem;
+    }
+
+    .job-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.75rem;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .job-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-light);
+    }
+
+    .job-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--primary);
+        opacity: 0;
+        transition: var(--transition);
+    }
+
+    .job-card:hover::before {
+        opacity: 1;
+    }
+
+    .job-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        background: var(--bg-secondary);
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .job-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--text);
+    }
+
+    .job-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .job-meta i {
+        color: var(--primary);
+    }
+
+    .job-footer {
+        margin-top: 1.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .job-budget {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text);
+    }
+
+    .job-budget span {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="jobs-page-header reveal">
+    <h1>Find Your Next Big Project</h1>
+    <p style="color: var(--text-muted); font-size: 1.1rem;">Browse thousands of projects from top recruiters worldwide.</p>
+</div>
+
+<div class="search-filter-bar reveal delay-1">
+    <div style="flex: 1; position: relative;">
+        <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+        <input type="text" placeholder="Search by title, skills or keywords..." style="padding-left: 2.75rem;">
+    </div>
+    <select style="flex: 0 0 200px;">
+        <option value="">All Categories</option>
+        <option value="WEB">Web Development</option>
+        <option value="DESIGN">Design</option>
+        <option value="MOBILE">Mobile Development</option>
+    </select>
+    <button class="btn btn-primary" style="padding-left: 2rem; padding-right: 2rem;">Search</button>
+</div>
+
+<div class="jobs-grid reveal delay-2" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem;">
+    {% for job in jobs %}
+    <div class="job-card">
+        <div>
+            <span class="job-badge">{{ job.get_category_display }}</span>
+            <h3 class="job-title">{{ job.title }}</h3>
+            <div class="job-meta">
+                <span><i class="fas fa-user-circle"></i> {{ job.recruiter.username }}</span>
+                <span><i class="fas fa-clock"></i> {{ job.created_at|date:"M d" }}</span>
+            </div>
+            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
+                {{ job.description|truncatewords:25 }}
+            </p>
+        </div>
+        
+        <div class="job-footer">
+            <div class="job-budget">
+                ${{ job.budget }} <span>/ project</span>
+            </div>
+            <a href="{% url 'job_detail' job.id %}" class="btn" style="border: 1px solid var(--border); color: var(--primary); font-weight: 700;">
+                Details <i class="fas fa-arrow-right" style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 5rem 0;">
+        <i class="fas fa-search" style="font-size: 3rem; color: var(--border); margin-bottom: 1.5rem;"></i>
+        <h3>No jobs found matching your criteria</h3>
+        <p style="color: var(--text-muted);">Try adjusting your filters or search keywords.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

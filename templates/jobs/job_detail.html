@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ job.title }} - FreelanceHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .job-detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .content-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2.5rem;
+    }
+
+    .sidebar-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2rem;
+        position: sticky;
+        top: 6rem;
+    }
+
+    .job-header {
+        margin-bottom: 2.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 2rem;
+    }
+
+    .job-header h1 {
+        font-size: 2.25rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .section-title i {
+        color: var(--primary);
+    }
+
+    .skill-tag {
+        background: var(--bg-secondary);
+        color: var(--text);
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+    }
+
+    .sidebar-stat {
+        margin-bottom: 1.5rem;
+    }
+
+    .sidebar-stat label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .sidebar-stat .value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    @media (max-width: 968px) {
+        .job-detail-grid {
+            grid-template-columns: 1fr;
+        }
+        .sidebar-card {
+            position: static;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="job-detail-grid">
+    <div class="content-card reveal">
+        <div class="job-header">
+            <span class="job-badge" style="background: var(--primary); color: white;">{{ job.get_category_display }}</span>
+            <h1>{{ job.title }}</h1>
+            <div class="job-meta">
+                <span><i class="fas fa-calendar-alt"></i> Posted {{ job.created_at|date:"F j, Y" }}</span>
+                <span><i class="fas fa-map-marker-alt"></i> Remote</span>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 3rem;">
+            <h3 class="section-title"><i class="fas fa-align-left"></i> About the Project</h3>
+            <p style="line-height: 1.8; color: var(--text); white-space: pre-line;">
+                {{ job.description }}
+            </p>
+        </div>
+
+        <div>
+            <h3 class="section-title"><i class="fas fa-bolt"></i> Skills Required</h3>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                {% for skill in job.required_skills.split %}
+                <span class="skill-tag">{{ skill }}</span>
+                {% empty %}
+                <span class="skill-tag">General Assistance</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <aside class="sidebar-card reveal delay-1">
+        <h3 class="section-title" style="margin-bottom: 2rem;">Recruitment Details</h3>
+        
+        <div class="sidebar-stat">
+            <label>Project Budget</label>
+            <div class="value" style="color: var(--primary); font-size: 1.75rem;">${{ job.budget }}</div>
+        </div>
+
+        <div class="sidebar-stat">
+            <label>Client</label>
+            <div class="value">{{ job.recruiter.username }}</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">member since {{ job.recruiter.date_joined|date:"Y" }}</p>
+        </div>
+
+        <div class="sidebar-stat">
+            <label>Deadline</label>
+            <div class="value">{{ job.deadline|date:"M d, Y" }}</div>
+        </div>
+
+        <div style="margin-top: 2rem; display: grid; gap: 1rem;">
+            {% if user.is_authenticated and user.role == 'FREELANCER' %}
+                <a href="{% url 'apply_to_job' job.id %}" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
+                    Apply for this Job
+                </a>
+            {% elif not user.is_authenticated %}
+                <a href="{% url 'account_login' %}" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
+                    Login to Apply
+                </a>
+            {% endif %}
+            <button class="btn" style="width: 100%; justify-content: center; border: 1px solid var(--border); padding: 1rem;">
+                <i class="far fa-heart"></i> Save to Bookmarks
+            </button>
+        </div>
+        
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); text-align: center;">
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Don't forget to review our <a href="#" style="color: var(--primary);">Safety Guidelines</a> before applying.
+            </p>
+        </div>
+    </aside>
+</div>
+{% endblock %}
